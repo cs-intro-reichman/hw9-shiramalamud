@@ -144,7 +144,7 @@ public class LinkedList {
 	 */
 	public MemoryBlock getBlock(int index) {
 		if (index < 0 || index >= size) {
-			throw new IllegalArgumentException("Index is out of bounds");
+			throw new IllegalArgumentException("index must be between 0 and size");
 		}
 		Node current = getNode(index);
 		return current.block;
@@ -178,28 +178,28 @@ public class LinkedList {
 	 */
 	public void remove(Node node)
 	 {
-		int indexNode=indexOf(node.block);
-		if (indexNode==0)
+		if (node == null) {
+			throw new NullPointerException();
+		}
+		if (first == null) 
 		{
-			if(size==1)
-			{
-				this.first=null;
-				this.last=first;
+			return;
+		}  
+
+		if (first == node) {
+			first = first.next;  
+			if (first == null) last = null;  
+		} else {
+			Node current = first;
+			while (current.next != null && current.next != node) {
+				current = current.next;
+			}
+			if (current.next == node) {
+				current.next = node.next;  
+				if (current.next == null) last = current;  
 			}
 		}
-		else if (indexNode==size-1)
-		{
-			Node nodePrev=getNode(indexNode-1);
-			this.last=nodePrev;
-			this.last.next=null;
-		}
-		else
-		{
-			Node nodePrev=getNode(indexNode-1);
-			Node removeNode=getNode(indexNode);
-			nodePrev.next=removeNode.next;
-		
-		}
+		node.next = null; 
 		size--;
 	}
 
