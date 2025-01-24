@@ -63,35 +63,37 @@ public class MemorySpace {
         }
 
         Node current = freeList.getFirst();
-        Node prev = null;
+    Node prev = null;
 
-        while (current != null) {
-            MemoryBlock block = current.block;
+    while (current != null) {
+        MemoryBlock block = current.block;
 
-            if (block.length >= length) {
-                int b = block.baseAddress;
+        if (block.length >= length) {
+            int b = block.baseAddress;
 
-                if (block.length == length) {
-                    if (prev == null) {
-                        freeList.remove(0);
-                    } else {
-                        freeList.remove(block);
-                        prev.next = current.next;
-                    }
+            if (block.length == length) {
+                // Remove block from freeList
+                if (prev == null) {
+                    freeList.remove(0);  
                 } else {
-                    block.baseAddress += length;
-                    block.length -= length;
+                    freeList.remove(block);
+                    prev.next = current.next;  
                 }
-
-                MemoryBlock newBlock = new MemoryBlock(b, length);
-                allocatedList.addLast(newBlock);
-                allocatedList.addLast(new MemoryBlock(b, length));
-                return b;
+            } else
+			 {
+                block.baseAddress += length;
+                block.length -= length;
             }
 
-            prev = current;
-            current = current.next;
+            MemoryBlock newBlock = new MemoryBlock(b, length);
+            allocatedList.addLast(newBlock);  
+            return b;
         }
+
+        prev = current;
+        current = current.next;
+    }
+
 			return -1;
 	}
 
@@ -106,28 +108,25 @@ public class MemorySpace {
 	public void free(int address) 
 	{
 		Node current = allocatedList.getFirst();
-        Node prev = null;
-
-        while (current != null) {
-            MemoryBlock block = current.block;
-
-            if (block.baseAddress == address) {
-                if (prev == null) {
-                    allocatedList.remove(0);
-                } 
-				else 
-				{
-                    allocatedList.remove(block);
-                    prev.next = current.next;
-                }
-
-                freeList.addLast(block);
-                return;
-            }
-
-            prev = current;
-            current = current.next;
-        }
+		Node prev = null;
+	
+		while (current != null) {
+			MemoryBlock block = current.block;
+	
+			if (block.baseAddress == address) {
+				if (prev == null) {
+					allocatedList.remove(0);  
+				} else {
+					allocatedList.remove(block);  
+					prev.next = current.next;     
+				}
+					freeList.addLast(block);
+				return;
+			}
+	
+			prev = current;
+			current = current.next;
+		}
         throw new IllegalArgumentException("Memory block with base address " + address + " not found in allocated list.");
 
 	}
@@ -148,18 +147,17 @@ public class MemorySpace {
 	public void defrag() {
 		Node current = freeList.getFirst();
 
-        while (current != null && current.next != null) 
-		{
-            MemoryBlock currentBlock = current.block;
-            MemoryBlock nextBlock = current.next.block;
-
-            if (currentBlock.baseAddress + currentBlock.length == nextBlock.baseAddress) {
-                currentBlock.length += nextBlock.length;
-                current.next = current.next.next;
-            } else {
-                current = current.next;
-            }
-        }
-    }
+		while (current != null && current.next != null) {
+			MemoryBlock currentBlock = current.block;
+			MemoryBlock nextBlock = current.next.block;
+				if (currentBlock.baseAddress + currentBlock.length == nextBlock.baseAddress) {
+				currentBlock.length += nextBlock.length;
+				current.next = current.next.next;
+			} else {
+				current = current.next;
+			}
+		}
+	}
 }
+
 	
