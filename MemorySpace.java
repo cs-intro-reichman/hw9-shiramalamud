@@ -58,8 +58,41 @@ public class MemorySpace {
 	 * @return the base address of the allocated block, or -1 if unable to allocate
 	 */
 	public int malloc(int length) {		
-		//// Replace the following statement with your code
-		return -1;
+		if (length <= 0) {
+            throw new IllegalArgumentException("Invalid memory block size.");
+        }
+
+        Node current = freeList.getFirst();
+        Node prev = null;
+
+        while (current != null) {
+            MemoryBlock block = current.block;
+
+            if (block.length >= length) {
+                int b = block.baseAddress;
+
+                if (block.length == length) {
+                    if (prev == null) {
+                        freeList.remove(0);
+                    } else {
+                        freeList.remove(block);
+                        prev.next = current.next;
+                    }
+                } else {
+                    block.baseAddress += length;
+                    block.length -= length;
+                }
+
+                MemoryBlock newBlock = new MemoryBlock(b, length);
+                allocatedList.addLast(newBlock);
+                allocatedList.addLast(new MemoryBlock(b, length));
+                return b;
+            }
+
+            prev = current;
+            current = current.next;
+        }
+			return -1;
 	}
 
 	/**
@@ -70,8 +103,33 @@ public class MemorySpace {
 	 * @param baseAddress
 	 *            the starting address of the block to freeList
 	 */
-	public void free(int address) {
-		//// Write your code here
+	public void free(int address) 
+	{
+		Node current = allocatedList.getFirst();
+        Node prev = null;
+
+        while (current != null) {
+            MemoryBlock block = current.block;
+
+            if (block.baseAddress == address) {
+                if (prev == null) {
+                    allocatedList.remove(0);
+                } 
+				else 
+				{
+                    allocatedList.remove(block);
+                    prev.next = current.next;
+                }
+
+                freeList.addLast(block);
+                return;
+            }
+
+            prev = current;
+            current = current.next;
+        }
+        throw new IllegalArgumentException("Memory block with base address " + address + " not found in allocated list.");
+
 	}
 	
 	/**
@@ -88,6 +146,20 @@ public class MemorySpace {
 	 * In this implementation Malloc does not call defrag.
 	 */
 	public void defrag() {
-		//// Write your code here
-	}
+		Node current = freeList.getFirst();
+
+        while (current != null && current.next != null) 
+		{
+            MemoryBlock currentBlock = current.block;
+            MemoryBlock nextBlock = current.next.block;
+
+            if (currentBlock.baseAddress + currentBlock.length == nextBlock.baseAddress) {
+                currentBlock.length += nextBlock.length;
+                current.next = current.next.next;
+            } else {
+                current = current.next;
+            }
+        }
+    }
 }
+	
