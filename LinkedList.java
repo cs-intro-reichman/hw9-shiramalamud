@@ -1,3 +1,6 @@
+/**
+ * Represents a list of Nodes. 
+ */
 public class LinkedList {
 
 	private Node first; // pointer to the first element of this list
@@ -52,7 +55,6 @@ public class LinkedList {
 					"index must be between 0 and size");
 		}
 		//// Replace the following statement with your code
-		return null;
 		Node temp = first;
 		for(int i = 0 ; i < index ; i ++) {
 			if(temp == null) return null;
@@ -157,7 +159,6 @@ public class LinkedList {
 	 */
 	public MemoryBlock getBlock(int index) {
 		//// Replace the following statement with your code
-		return null;
 		if (index < 0 || index > size || first == null) {
 			throw new IllegalArgumentException(
 					"index must be between 0 and size");
@@ -322,7 +323,6 @@ public class LinkedList {
 	 */
 	public String toString() {
 		//// Replace the following statement with your code
-		return "";
 		String result = "";
     	Node current = first;
     	for(int i = 0 ; i < size ; i ++) {
