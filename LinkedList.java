@@ -233,6 +233,22 @@ public class LinkedList {
 		remove(indexOf(block));
 	}	
 
+
+
+	public void sort() {
+		for (int i = 0; i < size - 1; i++) {
+			for (int j = 0; j < size - i - 1; j++) {
+				Node current = getNode(j);
+				Node next = current.next;
+				if (current.block.baseAddress > next.block.baseAddress) {
+					MemoryBlock cur = current.block;
+					current.block = next.block;
+					next.block = cur;
+				}
+			}
+		}
+	}
+    
 	/**
 	 * Returns an iterator over this list, starting with the first element.
 	 */
